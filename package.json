@@ -1,0 +1,59 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "mattana",
+  "title": "Mattana",
+  "description": "Export Matter highlights to Tana.",
+  "icon": "extension_icon.png",
+  "author": "jmatthewpryor",
+  "contributors": [
+    "jmatthewpryor"
+  ],
+  "categories": [
+    "Media",
+    "Web"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Mattana",
+      "description": "Export Matter highlights to Tana.",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "description": "Your Matter token",
+      "name": "matterToken",
+      "required": true,
+      "title": "Matter Token",
+      "type": "textfield"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.45.1",
+    "date-fns": "^2.29.3",
+    "node-fetch": "^3.3.0",
+    "nunjucks": "^3.2.3",
+    "qrcode.react": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.8.3",
+    "@types/nunjucks": "^3.2.2",
+    "@types/react": "18.0.9",
+    "@types/whatwg-fetch": "^0.0.33",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.4.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "ray publish"
+  }
+}
