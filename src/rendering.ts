@@ -1,4 +1,4 @@
-import { format, parseISO } from "date-fns";
+import { format, parseISO, formatISO } from "date-fns";
 import * as nunjucks from "nunjucks";
 import { Annotation, FeedEntry } from "./api";
 
@@ -6,15 +6,47 @@ const renderer = new nunjucks.Environment(null, { trimBlocks: true, autoescape: 
 renderer.addFilter("date", (str, fmt) => {
   return format(parseISO(str), fmt);
 });
+renderer.addFilter("isoDate", (str) => {
+  return formatISO(parseISO(str));
+});
+renderer.addFilter("removeNewlines", (str) => {
+  return str.replace(/\n+/g, " ")
+    .trim();
+});
 
-const LAYOUT_TEMPLATE = `
+const METADATA_TEMPLATE = `- tana_input_source_{{content.id}} #[[#article ⇤]]
+    - id:: {{content.id}}
+    - title::
+        - {{content.title}}
+{% if content.author %}
+    - author:: [[{{content.author.any_name}} #author]]
+{% elif content.publisher %}
+    - author:: [[{{content.publisher.any_name}} #author]]
+{% endif %}
+    - app:: [[Matter]]
+    - source_url:: {{content.url}}
+{% if content.photo_thumbnail_url %}
+    - image:: ![]({{content.photo_thumbnail_url}})
+{% elif content.publisher.domain_photo %}
+    - image:: ![]({{content.publisher.domain_photo}})
+{% endif %}
+    - Imported Highlights`;
+
+const HIGHLIGHT_TEMPLATE = `        - tana_input_highlight_{{id}} #[[tana-input-highlight]]
+            - id:: {{id}}
+            - text:: {{text}}
+            - note::
+                - {{note|removeNewlines()}} #[[raw-note]]
+            - day_highlighted:: [[date:{{created_date|isoDate()}}]]
+`;
+
+const LAYOUT_TEMPLATE =
+`%%tana%%
 {{metadata}}
-
-## Highlights
 {{highlights}}
 `;
 
-const METADATA_TEMPLATE = `
+const METADATA_TEMPLATE_OLD = `
 ## Metadata
 * URL: [{{url}}]({{url}})
 {% if author %}
@@ -34,7 +66,7 @@ const METADATA_TEMPLATE = `
 {% endif %}
 `;
 
-const HIGHLIGHT_TEMPLATE = `
+const HIGHLIGHT_TEMPLATE_OLD = `
 * {{text}}
 {% if note %}
   * **Note**: {{note}}
@@ -60,7 +92,7 @@ export function renderFeedEntry(feedEntry: FeedEntry): string {
   }
 
   try {
-    return renderer.renderString(LAYOUT_TEMPLATE.trim(), {
+    return renderer.renderString(LAYOUT_TEMPLATE, {
       title: feedEntry.content.title,
       metadata: metadata,
       highlights: highlights,
@@ -79,20 +111,21 @@ function _renderMetadata(feedEntry: FeedEntry): string {
     publishedDate = feedEntry.content.publication_date;
   }
 
-  return renderer.renderString(template.trim(), {
-    author: feedEntry.content.author?.any_name,
-    note: feedEntry.content.my_note?.note,
-    published_date: publishedDate,
-    publisher: feedEntry.content.publisher?.any_name,
-    tags: feedEntry.content.tags.map((t) => t.name),
-    title: feedEntry.content.title,
-    url: feedEntry.content.url,
-  });
+  return renderer.renderString(template, {content: feedEntry.content});
+  // {
+  //   author: feedEntry.content.author?.any_name,
+  //   note: feedEntry.content.my_note?.note,
+  //   published_date: publishedDate,
+  //   publisher: feedEntry.content.publisher?.any_name,
+  //   tags: feedEntry.content.tags.map((t) => t.name),
+  //   title: feedEntry.content.title,
+  //   url: feedEntry.content.url,
+  // });
 }
 
 function _renderAnnotation(annotation: Annotation) {
   const template = HIGHLIGHT_TEMPLATE;
 
-  return renderer.renderString(template.trim(), {...annotation});
+  return renderer.renderString(template, {...annotation});
 }
 

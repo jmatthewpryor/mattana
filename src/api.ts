@@ -28,6 +28,8 @@ export interface ContentNote {
 }
 
 export interface Publisher {
+  photo_url: string;
+  domain_photo: string;
   any_name: string | null;
 }
 
@@ -41,6 +43,7 @@ export interface LibraryEntry {
 }
 
 export interface Content {
+  photo_thumbnail_url: string;
   author: Author;
   library: LibraryEntry | null;
   publisher: Publisher;

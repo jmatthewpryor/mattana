@@ -7,18 +7,24 @@ export function Actions(props: {item: FeedEntry}) {
   return (
     <ActionPanel title={props.item.content.title}>
       <ActionPanel.Section>
-        {/* OPEN IN MATTER */}
-        {props.item.content.title && props.item.id && (
-          <Action.OpenInBrowser url={props.item.content.url} title="Open in Matter" />
-        )}
-        {/* View Original */}
-        {props.item.content.url && <Action.OpenInBrowser url={props.item.content.url} title="View Original" />}
-        {/* COPY LINK */}
+        {/* COPY TANA */}
         {props.item.content.url && (
           <Action.CopyToClipboard
-            content={renderFeedEntry(props.item) + "\n" + JSON.stringify(props.item)}
-            title="Copy Link"
+            content={renderFeedEntry(props.item)}
+            title="Copy as Tana Paste"
             shortcut={{ modifiers: ["cmd"], key: "." }}
+          />
+        )}
+        {/* OPEN IN MATTER */}
+        {props.item.content.title && props.item.id && (
+          <Action.OpenInBrowser url={props.item.content.url} title="Open in Browser" />
+        )}
+        {/* COPY JSON */}
+        {props.item.content.url && (
+          <Action.CopyToClipboard
+            content={JSON.stringify(props.item)}
+            title="Copy as JSON"
+            shortcut={{ modifiers: ["cmd","shift"], key: "j" }}
           />
         )}
         {/* FAVORITE ARTICLE */}
